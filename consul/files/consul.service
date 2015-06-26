@@ -1,0 +1,11 @@
+[Unit]
+Description=Nameserver information manager
+DefaultDependencies=no
+After=networking.service
+
+[Service]
+User={{user}}
+Group={{group}}
+Restart=always
+RestartSec=10
+ExecStart={{ install_path }}/consul agent -config-dir={{ config_dir }} -config-file={{ config_file }} >> {{ log_file }} 2>&1

@@ -1,9 +1,17 @@
 {
   {% if is_ui %}
-  "ui_dir": "{{ home_dir }}/dist",
+  "ui_dir": "{{ install_path }}/dist",
+  {% endif %}
+  {% if is_ui and public_address %}
+  "addresses": {
+    "http": "{{ salt['network.ip_addrs']()[0] }}"
+  },
   {% endif %}
   {% if is_bootstrap %}
   "bootstrap": true,
+  {% endif %}
+  {% if public_address %}
+    "advertise_addr": "{{ salt['network.ip_addrs']()[0] }}",
   {% endif %}
   "domain": "{{ domain }}",
   "data_dir": "{{ home_dir }}/data",

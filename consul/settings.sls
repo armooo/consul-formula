@@ -15,6 +15,7 @@
 {%- set server_target = salt['pillar.get']('consul:server_target') %}
 {%- set ui_target = salt['pillar.get']('consul:ui_target') %}
 {%- set bootstrap_target = salt['pillar.get']('consul:bootstrap_target') %}
+{%- set public_address = salt['pillar.get']('consul:public_address') %}
 
 {%- set is_server = salt['match.' ~ targeting_method](server_target) %}
 {%- set is_ui = salt['match.' ~	targeting_method](server_target) %}
@@ -24,10 +25,11 @@
 {%- set servers = salt['mine.get'](server_target, 'network.get_hostname', targeting_method).values() %}
 
 # Create a list of servers that can be used to join the cluster
-{%- set join_server = None %}
+{%- set join_servers = [] %}
 {%- for server in servers if server != nodename %}
-    {%- set join_server = server %}
+    {%- do join_servers.append(server) %}
 {%- endfor %}
+{%- set join_server = salt['mine.get'](join_servers[0], 'network.ip_addrs')[join_servers[0]][0] %}
 
 {%- set consul = {} %}
 {%- do consul.update({
@@ -49,6 +51,7 @@
     'domain': domain,
     'servers': server,
     'bootstrap_target': bootstrap_target,
-    'join_server': join_server
+    'join_server': join_server,
+    'public_address': public_address,
 
 }) %}
